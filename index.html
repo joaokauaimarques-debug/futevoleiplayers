@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FuteVôlei.net — Rede de Atletas e Campeonatos</title>
+  <meta name="description" content="A rede social do futevôlei brasileiro. Encontre campeonatos, conecte-se com atletas e forme sua dupla.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ─── Court Background ───────────────────────── -->
+<div class="court-bg"></div>
+
+<!-- ─── Toast Container ───────────────────────── -->
+<div id="toast-container"></div>
+
+<!-- ─── NAV ──────────────────────────────────── -->
+<nav>
+  <div class="container nav-inner">
+    <a class="nav-logo" href="#" onclick="Auth.isLoggedIn()?App.showPage('home'):App.showPage('landing')">
+      FV<span>.</span>net
+    </a>
+
+    <div class="nav-links" id="nav-guest">
+      <button class="btn btn-theme" onclick="Theme.toggle()" title="Alternar tema">🌙</button>
+      <button class="btn btn-outline btn-sm" onclick="openLoginModal()">Entrar</button>
+      <button class="btn btn-cta btn-sm" onclick="openRegisterModal()">Cadastrar</button>
+    </div>
+
+    <div class="nav-links hidden" id="nav-user">
+      <button class="nav-link" data-page="home" onclick="App.showPage('home')">🏠 Início</button>
+      <button class="nav-link" data-page="competitions" onclick="App.showPage('competitions')">🏆 Competições</button>
+      <button class="nav-link" data-page="athletes" onclick="App.showPage('athletes')">👥 Atletas</button>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <button class="btn btn-theme" onclick="Theme.toggle()">🌙</button>
+      <button class="notif-btn" onclick="App.showPage('notifications')" title="Notificações">
+        🔔<span class="notif-dot" id="notif-dot"></span>
+      </button>
+      <div class="dropdown">
+        <div class="nav-avatar" id="nav-avatar-img" onclick="toggleNavDropdown()"></div>
+        <div class="dropdown-menu" id="nav-dropdown">
+          <div class="dropdown-item" onclick="App.showPage('profile');closeNavDropdown()">👤 Meu Perfil</div>
+          <div class="dropdown-item" onclick="openEditProfileModal();closeNavDropdown()">✏️ Editar Perfil</div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" onclick="Auth.logout()">🚪 Sair</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── APP ───────────────────────────────────── -->
+<div id="app">
+
+  <!-- ── LANDING ──────────────────────────────── -->
+  <div class="page active" id="page-landing">
+    <main style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div class="container" style="padding:80px 24px">
+        <div style="max-width:680px;margin:0 auto;text-align:center">
+          <div style="display:inline-flex;align-items:center;gap:8px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);padding:6px 16px;border-radius:999px;font-size:.8rem;font-weight:600;margin-bottom:24px;border:1px solid color-mix(in srgb,var(--accent) 25%,transparent)">
+            🏐 A rede social do futevôlei brasileiro
+          </div>
+          <h1 class="font-display" style="font-size:clamp(3rem,8vw,5.5rem);line-height:1;letter-spacing:.03em;margin-bottom:24px">
+            FORME SUA<br><span style="color:var(--cta)">DUPLA.</span><br>DOMINE A REDE.
+          </h1>
+          <p style="font-size:1.1rem;color:var(--text-muted);max-width:480px;margin:0 auto 40px">
+            Conecte-se com atletas, inscreva-se em campeonatos e construa seu histórico no futevôlei.
+          </p>
+          <div class="flex gap-12 justify-center" style="flex-wrap:wrap">
+            <button class="btn btn-cta btn-lg" onclick="openRegisterModal()">Criar conta grátis →</button>
+            <button class="btn btn-outline btn-lg" onclick="openLoginModal()">Já tenho conta</button>
+          </div>
+
+          <!-- Features -->
+          <div class="grid-3" style="margin-top:64px;text-align:left">
+            <div class="card card-sm">
+              <div class="card-body">
+                <div style="font-size:1.8rem;margin-bottom:8px">🏆</div>
+                <div class="fw-700 mb-8">Campeonatos</div>
+                <div class="text-sm text-muted">Encontre e inscreva-se nos melhores torneios do Brasil.</div>
+              </div>
+            </div>
+            <div class="card card-sm">
+              <div class="card-body">
+                <div style="font-size:1.8rem;margin-bottom:8px">🤝</div>
+                <div class="fw-700 mb-8">Duplas</div>
+                <div class="text-sm text-muted">Convide parceiros e forme sua dupla com um clique.</div>
+              </div>
+            </div>
+            <div class="card card-sm">
+              <div class="card-body">
+                <div style="font-size:1.8rem;margin-bottom:8px">📋</div>
+                <div class="fw-700 mb-8">Histórico</div>
+                <div class="text-sm text-muted">Acompanhe cada torneio jogado e evolua sua carreira.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ── HOME ─────────────────────────────────── -->
+  <div class="page" id="page-home">
+    <div id="home-content"></div>
+  </div>
+
+  <!-- ── COMPETITIONS ──────────────────────────── -->
+  <div class="page" id="page-competitions">
+    <div id="competitions-content"></div>
+  </div>
+
+  <!-- ── ATHLETES ──────────────────────────────── -->
+  <div class="page" id="page-athletes">
+    <div id="athletes-content"></div>
+  </div>
+
+  <!-- ── PROFILE ───────────────────────────────── -->
+  <div class="page" id="page-profile">
+    <div id="profile-content"></div>
+  </div>
+
+  <!-- ── NOTIFICATIONS ─────────────────────────── -->
+  <div class="page" id="page-notifications">
+    <div id="notifications-content"></div>
+  </div>
+
+</div><!-- /app -->
+
+
+<!-- ══════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════ -->
+
+<!-- ── LOGIN ─────────────────────────────────── -->
+<div class="modal-overlay" id="modal-login" onclick="if(event.target===this)Modal.close('modal-login')">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="fw-700" style="font-size:1.5rem;font-family:var(--font-display);letter-spacing:.02em;color:var(--accent)">FV<span style="color:var(--cta)">.</span>net</span>
+      <button class="modal-close" onclick="Modal.close('modal-login')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h2 class="modal-title">Entrar na sua conta</h2>
+      <form onsubmit="handleLogin(event)">
+        <div class="flex-col" style="display:flex;gap:14px">
+          <div class="form-group">
+            <label class="form-label">Usuário</label>
+            <input name="login_username" class="form-control" placeholder="@seuusuario" autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Senha</label>
+            <input name="login_password" type="password" class="form-control" placeholder="••••••••" autocomplete="current-password">
+          </div>
+          <div id="login-error" class="form-error"></div>
+          <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+        </div>
+      </form>
+      <p class="text-sm text-muted" style="text-align:center;margin-top:8px">
+        Não tem conta? <a href="#" class="text-accent fw-600" onclick="switchToRegister()">Cadastre-se grátis</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ── REGISTER ───────────────────────────────── -->
+<div class="modal-overlay" id="modal-register" onclick="if(event.target===this)Modal.close('modal-register')">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <span class="fw-700" style="font-size:1.5rem;font-family:var(--font-display);letter-spacing:.02em;color:var(--accent)">FV<span style="color:var(--cta)">.</span>net</span>
+      <button class="modal-close" onclick="Modal.close('modal-register')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h2 class="modal-title">Criar conta de atleta</h2>
+      <form onsubmit="handleRegister(event)">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="form-group">
+            <label class="form-label">Nome completo *</label>
+            <input name="reg_name" class="form-control" placeholder="Seu nome completo" autocomplete="name">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Data de nascimento *</label>
+              <input name="reg_birthdate" type="date" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sexo *</label>
+              <select name="reg_sex" class="form-control">
+                <option value="">Selecione...</option>
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+                <option value="O">Outro / Prefiro não dizer</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">CPF *</label>
+            <input name="reg_cpf" class="form-control" placeholder="000.000.000-00" maxlength="14" oninput="maskCPF(this)" inputmode="numeric">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Nome de usuário *</label>
+              <input name="reg_username" class="form-control" placeholder="@seuusuario" autocomplete="username">
+              <span class="form-hint">Letras, números e _ (3-20 chars)</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Conhecido por</label>
+              <input name="reg_alias" class="form-control" placeholder="Ex: Foca, Rei do Saque...">
+              <span class="form-hint">Seu apelido na quadra</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Senha *</label>
+            <input name="reg_password" type="password" class="form-control" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+          </div>
+          <div id="reg-error" class="form-error"></div>
+          <button type="submit" class="btn btn-cta btn-full">Criar Conta</button>
+        </div>
+      </form>
+      <p class="text-sm text-muted" style="text-align:center;margin-top:8px">
+        Já tem conta? <a href="#" class="text-accent fw-600" onclick="switchToLogin()">Entrar</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADD COMPETITION ───────────────────────── -->
+<div class="modal-overlay" id="modal-add-comp" onclick="if(event.target===this)Modal.close('modal-add-comp')">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <span class="modal-title">🏆 Nova Competição</span>
+      <button class="modal-close" onclick="Modal.close('modal-add-comp')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form onsubmit="handleAddComp(event)">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="form-group">
+            <label class="form-label">Nome da competição *</label>
+            <input name="comp_name" class="form-control" placeholder="Ex: Open Verão Ipanema 2025">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Data *</label>
+              <input name="comp_date" type="date" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Local</label>
+              <input name="comp_location" class="form-control" placeholder="Ex: Praia de Ipanema, RJ">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Categorias *</label>
+            <span class="form-hint" style="margin-bottom:8px">Selecione as combinações que a competição terá</span>
+            <div style="overflow-x:auto">
+              <table id="cat-table" style="border-collapse:collapse;min-width:340px;width:100%">
+                <thead>
+                  <tr>
+                    <th style="width:36px"></th>
+                    <th style="padding:6px 10px;text-align:center;font-size:.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Iniciante</th>
+                    <th style="padding:6px 10px;text-align:center;font-size:.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Intermediário</th>
+                    <th style="padding:6px 10px;text-align:center;font-size:.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Avançado</th>
+                    <th style="padding:6px 10px;text-align:center;font-size:.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Elite</th>
+                  </tr>
+                </thead>
+                <tbody id="cat-tbody"></tbody>
+              </table>
+            </div>
+            <div id="cat-preview" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Valor da inscrição (R$)</label>
+              <input name="comp_price" type="number" min="0" step="0.01" class="form-control" placeholder="0,00 = gratuito">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Instagram</label>
+              <input name="comp_instagram" class="form-control" placeholder="@nomecompetição">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descrição</label>
+            <textarea name="comp_description" class="form-control" rows="2" placeholder="Informações adicionais..." style="resize:vertical"></textarea>
+          </div>
+          <div id="comp-error" class="form-error"></div>
+          <button type="submit" class="btn btn-cta btn-full">Criar Competição 🏆</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── COMPETITION DETAIL ────────────────────── -->
+<div class="modal-overlay" id="modal-comp-detail" onclick="if(event.target===this)Modal.close('modal-comp-detail')">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <span></span>
+      <button class="modal-close" onclick="Modal.close('modal-comp-detail')">✕</button>
+    </div>
+    <div class="modal-body" id="comp-detail-content"></div>
+  </div>
+</div>
+
+<!-- ── REGISTER TO COMPETITION ──────────────── -->
+<div class="modal-overlay" id="modal-register-comp" onclick="if(event.target===this)Modal.close('modal-register-comp')">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <span></span>
+      <button class="modal-close" onclick="Modal.close('modal-register-comp')">✕</button>
+    </div>
+    <div class="modal-body" style="gap:14px" id="reg-modal-content"></div>
+  </div>
+</div>
+
+<!-- ── INVITE (from athlete profile) ─────────── -->
+<div class="modal-overlay" id="modal-invite" onclick="if(event.target===this)Modal.close('modal-invite')">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <span></span>
+      <button class="modal-close" onclick="Modal.close('modal-invite')">✕</button>
+    </div>
+    <div class="modal-body" id="invite-modal-content"></div>
+  </div>
+</div>
+
+<!-- ── EDIT PROFILE ───────────────────────────── -->
+<div class="modal-overlay" id="modal-edit-profile" onclick="if(event.target===this)Modal.close('modal-edit-profile')">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <span></span>
+      <button class="modal-close" onclick="Modal.close('modal-edit-profile')">✕</button>
+    </div>
+    <div class="modal-body" id="edit-profile-content"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════ -->
+<script src="js/core.js"></script>
+<script src="js/pages.js"></script>
+<script src="js/actions.js"></script>
+<script>
+// ─── Nav dropdown ──────────────────────────────
+function toggleNavDropdown() {
+  document.getElementById('nav-dropdown').classList.toggle('open');
+}
+function closeNavDropdown() {
+  document.getElementById('nav-dropdown').classList.remove('open');
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.dropdown')) closeNavDropdown();
+});
+
+// ─── Keyboard close modals ─────────────────────
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') Modal.closeAll();
+});
+
+// ─── Category grid (sexo × nível) ─────────────
+const CAT_SEXOS  = ['Masculino','Feminino','Misto'];
+const CAT_NIVEIS = ['Iniciante','Intermediário','Avançado','Elite'];
+const CAT_COLORS = { Masculino:'var(--ocean-600)', Feminino:'var(--cta)', Misto:'#7a5c1e' };
+
+function buildCatTable() {
+  const tbody = document.getElementById('cat-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = CAT_SEXOS.map(sexo => `
+    <tr>
+      <td style="padding:6px 8px;font-size:.82rem;font-weight:600;white-space:nowrap;color:${CAT_COLORS[sexo]}">${sexo}</td>
+      ${CAT_NIVEIS.map(nivel => {
+        const val = `${sexo} ${nivel}`;
+        return `<td style="padding:6px;text-align:center">
+          <input type="checkbox" name="cat" value="${val}" id="cat-${val.replace(' ','-')}"
+            style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer"
+            onchange="updateCatPreview()">
+        </td>`;
+      }).join('')}
+    </tr>`).join('');
+  updateCatPreview();
+}
+
+function updateCatPreview() {
+  const checked = Array.from(document.querySelectorAll('#cat-tbody input[name=cat]:checked')).map(c=>c.value);
+  const preview = document.getElementById('cat-preview');
+  if (!preview) return;
+  preview.innerHTML = checked.length
+    ? checked.map(c => `<span class="badge badge-ocean" style="font-size:.72rem">${c}</span>`).join('')
+    : '<span class="text-xs text-muted">Nenhuma categoria selecionada</span>';
+}
+
+// Build table whenever the modal opens
+document.getElementById('modal-add-comp').addEventListener('transitionend', () => {
+  if (document.getElementById('modal-add-comp').classList.contains('open')) buildCatTable();
+});
+// Also build on click of the open button as fallback
+const _origOpenAddComp = window.openAddCompModal;
+window.openAddCompModal = function() {
+  if (_origOpenAddComp) _origOpenAddComp();
+  setTimeout(buildCatTable, 50);
+};
+
+// ─── Boot ──────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  initDB();
+  Theme.apply();
+  App.render();
+  if (Auth.isLoggedIn()) {
+    App.showPage('home');
+  } else {
+    App.showPage('landing');
+  }
+});
+</script>
+</body>
+</html>
